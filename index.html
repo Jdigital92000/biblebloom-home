@@ -1,132 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BibleBloom Chat</title>
-    <style>
-        /* Styling for the chat box */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .chat-container {
-            width: 350px;
-            height: 500px;
-            background-color: white;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            padding: 10px;
-        }
-        .chat-box {
-            flex-grow: 1;
-            overflow-y: auto;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: #fafafa;
-        }
-        .input-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .text-input {
-            width: 80%;
-            padding: 8px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-        .send-button {
-            width: 15%;
-            padding: 8px;
-            background-color: #5cb85c;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .send-button:hover {
-            background-color: #4cae4c;
-        }
-        .microphone {
-            cursor: pointer;
-        }
-        .message {
-            padding: 10px;
-            background-color: #d1e7dd;
-            border-radius: 5px;
-            margin-bottom: 5px;
-        }
-        .message.user {
-            background-color: #f8d7da;
-            text-align: right;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BibleBloom Chat</title>
+  <style>
+    /* Overall page styling */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    /* Chat container styling */
+    .chat-container {
+      width: 350px;
+      height: 500px;
+      background-color: white;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      padding: 10px;
+    }
+    /* Chat messages box */
+    .chat-box {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #fafafa;
+    }
+    /* Input container holding the text input and send button */
+    .input-container {
+      display: flex;
+      align-items: center;
+    }
+    /* Input wrapper to position the microphone in the text box */
+    .input-wrapper {
+      position: relative;
+      flex-grow: 1;
+    }
+    /* Text input styling */
+    .text-input {
+      width: 100%;
+      padding: 8px 40px 8px 8px; /* Extra padding on right for microphone */
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    /* Microphone icon styling */
+    .microphone {
+      position: absolute;
+      bottom: 8px;
+      right: 10px;
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+    }
+    /* Send button styling */
+    .send-button {
+      margin-left: 10px;
+      padding: 8px;
+      background-color: #5cb85c;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .send-button:hover {
+      background-color: #4cae4c;
+    }
+    /* Message styling */
+    .message {
+      padding: 10px;
+      background-color: #d1e7dd;
+      border-radius: 5px;
+      margin-bottom: 5px;
+    }
+    .message.user {
+      background-color: #f8d7da;
+      text-align: right;
+    }
+  </style>
 </head>
 <body>
 
 <div class="chat-container">
-    <div class="chat-box" id="chatBox">
-        <!-- Messages will appear here -->
+  <div class="chat-box" id="chatBox">
+    <!-- Messages will appear here -->
+  </div>
+  <div class="input-container">
+    <div class="input-wrapper">
+      <input type="text" class="text-input" id="userInput" placeholder="Ask your question..." />
+      <img class="microphone" src="https://upload.wikimedia.org/wikipedia/commons/1/1f/Microphone_icon.svg" alt="Microphone" onclick="startRecording()" />
     </div>
-    <div class="input-container">
-        <input type="text" class="text-input" id="userInput" placeholder="Ask your question..." />
-        <button class="send-button" id="sendButton">Send</button>
-        <img class="microphone" src="https://upload.wikimedia.org/wikipedia/commons/1/1f/Microphone_icon.svg" alt="Microphone" width="30" height="30" onclick="startRecording()"/>
-    </div>
+    <button class="send-button" id="sendButton">Send</button>
+  </div>
 </div>
 
 <script>
-    // Function to handle sending messages
-    document.getElementById("sendButton").addEventListener("click", function() {
-        const userInput = document.getElementById("userInput").value;
-        if (userInput.trim()) {
-            addMessage(userInput, 'user');
-            document.getElementById("userInput").value = ''; // Clear input field
-            getBotResponse(userInput);
-        }
-    });
-
-    // Function to add messages to the chat box
-    function addMessage(message, sender) {
-        const chatBox = document.getElementById("chatBox");
-        const messageElement = document.createElement("div");
-        messageElement.classList.add("message");
-        if (sender === 'user') {
-            messageElement.classList.add("user");
-        }
-        messageElement.textContent = message;
-        chatBox.appendChild(messageElement);
-        chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to latest message
+  // When the "Send" button is clicked
+  document.getElementById("sendButton").addEventListener("click", function() {
+    const userInput = document.getElementById("userInput").value;
+    if (userInput.trim()) {
+      addMessage(userInput, 'user');
+      document.getElementById("userInput").value = ''; // Clear input
+      getBotResponse(userInput);
     }
+  });
 
-    // Function to get the AI response (this is just a placeholder)
-    function getBotResponse(userMessage) {
-        // Here you can link to your backend API or logic
-        // Example: send the userMessage to an AI model like OpenAI or custom backend
-
-        // For now, this is a static response just for demonstration:
-        const botMessage = "This is a response based on BibleBloom's teachings.";
-        setTimeout(() => {
-            addMessage(botMessage, 'bot');
-        }, 1000); // Simulate delay for response
+  // Function to add a message to the chat box
+  function addMessage(message, sender) {
+    const chatBox = document.getElementById("chatBox");
+    const messageElement = document.createElement("div");
+    messageElement.classList.add("message");
+    if (sender === 'user') {
+      messageElement.classList.add("user");
     }
+    messageElement.textContent = message;
+    chatBox.appendChild(messageElement);
+    chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll
+  }
 
-    // Microphone functionality (basic example)
-    function startRecording() {
-        alert('Microphone clicked. You can implement speech-to-text here!');
-        // Implement speech-to-text functionality here (e.g., using Web Speech API or 3rd party service)
-    }
+  // Placeholder function to get AI response
+  function getBotResponse(userMessage) {
+    // This is just a placeholder. Replace with API call if available.
+    const botMessage = "This is a response based on BibleBloom's teachings.";
+    setTimeout(() => {
+      addMessage(botMessage, 'bot');
+    }, 1000);
+  }
+
+  // Basic microphone functionality (placeholder)
+  function startRecording() {
+    alert('Microphone clicked. Implement speech-to-text functionality here!');
+    // Here you could integrate the Web Speech API or another speech-to-text service.
+  }
 </script>
 
 </body>
